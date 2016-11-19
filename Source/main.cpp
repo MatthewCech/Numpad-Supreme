@@ -1,8 +1,20 @@
+/*!***************************************************************************
+@file    main.cpp
+@author  Reverie Wisp
+@par     Email: contact@rw0.pw
+@date    11/19/2016
+
+@brief
+Usable under the "Don't be a dick" license, included in repo. Please respect
+the individual requests of the authors of the externally included libraries.
+
+FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2015.
+*****************************************************************************/
 #include "FileIO\FileIO.hpp" // Easy reading and writing to files
 #include "AudioSystem.hpp"   // System for managing sounds
 #include "AudioFile.hpp"     // Sounds
 #include <ostream>           // cout
-#include <conio.h>           // _kbhit()
+#include <conio.h>           // _kbhit() ( windows only :c )
 #include <istream>           // cin
 #include <vector>            // vector and pair
 
@@ -144,23 +156,7 @@ static bool ParseFile(
 }
 
 
-/* Application entry point, args as follows:
- * ===============================
- * Program Usage:
- *
- * <applicationName.exe> <optional config file filepath>
- *
- * If no config file is specified, you will be prompted for key bindings.
- *
- * ===============================
- * Config File Format:
- * <bool: prompt for key bindings after parse?>
- * <char: key to press> : <audio filepath>
- * 
- * example:
- * true
- * 1 : ../Test.wav
- */
+// Application entry point. Consult Readme.MD for additional information.
 int main(int argc, char** argv)
 {
   // Audio system setup
@@ -205,7 +201,11 @@ int main(int argc, char** argv)
     audioSystem.Update();
   }
 
-  //!TODO: Cleanup allocated memory
+  // Clean up memory
+  for (unsigned int i = 0; i < sounds.size(); ++i)
+    delete sounds[i].second;
+
+  // Return that we're done!
   return 0;
 }
 

@@ -15,5 +15,11 @@ call build_vs2015.bat
 
 echo.
 echo.
+echo -- [ MOVING RESOURCES ] --
+cd ..
+copy Resources project_vs2015
+
+echo.
+echo.
 echo -- [ EXITING ] --
 timeout 30
