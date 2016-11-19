@@ -1,6 +1,5 @@
 #include "AudioSystem.hpp"
 #include <FMOD\fmod_errors.h>
-#include <RTest\RTest.hpp>
 
 
 namespace ASCIIPlayer
@@ -25,7 +24,7 @@ namespace ASCIIPlayer
     {
       printf("You are using an old version of FMOD, %08x. This program requires %08x\n",
         version_, FMOD_VERSION);
-      throw RTest::RException("Oudated FMOD Version Error!");
+      throw std::string("Oudated FMOD Version Error!");
     }
 
     // Check for drivers
@@ -220,7 +219,7 @@ namespace ASCIIPlayer
   void AudioSystem::FCheck(const FMOD_RESULT &res) const
   {
     if (res != FMOD_OK)
-      throw RTest::RException(std::string("FMOD Error: ") + FMOD_ErrorString(res));
+      throw std::string(std::string("FMOD Error: ") + FMOD_ErrorString(res));
   }
 
 
