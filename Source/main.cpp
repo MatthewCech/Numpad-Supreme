@@ -7,8 +7,43 @@
 #include <vector>            // vector and pair
 
 
-// Typedefs
+// Typedefs and Defines
 typedef std::vector<std::pair<char, NumpadSupreme::AudioFile *>> SoundVec;
+#define SPACE_CHAR ' '
+#define NEWLINE_CHAR '\n'
+#define RETURN_CHAR '\r'
+#define TAB_CHAR '\t'
+
+
+// Checks to see if a character is considered whitespace.
+// If so, returns true, otherwise false.
+static bool IsWhitespace(char toCheck)
+{
+  if (toCheck == SPACE_CHAR
+    || toCheck == NEWLINE_CHAR
+    || toCheck == RETURN_CHAR
+    || toCheck == TAB_CHAR)
+    return true;
+
+  return false;
+}
+
+
+// takes a string reference as an argument and returns said refernce when done.
+// The string will have all whitespace removed from it.
+static std::string &TrimStr(std::string &str)
+{
+  // Trim leading and trailing spaces from filepath;
+  // For each leading index. If the index is *still* a space or whitespace, trim.
+  while (IsWhitespace(str[0]))
+    str = str.substr(1);
+
+  // Trailing trimming mimics leading
+  while (IsWhitespace(str[str.size() - 1]))
+    str = str.substr(0, str.size() - 1);
+
+  return str;
+}
 
 
 // Parses input provided by two strings, adding a new char and sound pair
@@ -19,17 +54,9 @@ static void ParseInput(
   , SoundVec *sounds
   , NumpadSupreme::AudioSystem *audioSystem)
 {
-  // Trim leading and trailing spaces from filepath;
-  // For each leading index. If the index is *still* a space or whitespace, trim.
-  while (filepath[0] == ' ')
-    filepath = filepath.substr(1);
-  
-  // Trailing trimming mimics leading
-  while (filepath[filepath.size() - 1] == ' ')
-    filepath = filepath.substr(0, filepath.size() - 1);
-
   // Create file and associate it with a key, add to vector of possibilities
   // only if we managed to load it.
+  TrimStr(filepath);
   NumpadSupreme::AudioFile *newAF = new NumpadSupreme::AudioFile(filepath);
   bool loaded = audioSystem->PreloadFile(*newAF);
   if (loaded)
@@ -60,7 +87,7 @@ static void PromptInput(SoundVec *sounds, NumpadSupreme::AudioSystem *audioSyste
       std::cin >> inputKey;
       if (inputKey == "done")
         break;
-      std::cin >> inputFilepath;
+      std::getline(std::cin, inputFilepath);
       if (inputFilepath == "done")
         break;
 
@@ -137,7 +164,7 @@ static bool ParseFile(
 int main(int argc, char** argv)
 {
   // Audio system setup
-  NumpadSupreme::AudioSystem audioSystem(10);
+  NumpadSupreme::AudioSystem audioSystem(100);
   bool promptForInput = true;
   SoundVec sounds;
 
@@ -178,9 +205,7 @@ int main(int argc, char** argv)
     audioSystem.Update();
   }
 
-
   //!TODO: Cleanup allocated memory
   return 0;
 }
-
 
