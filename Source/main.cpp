@@ -19,11 +19,24 @@ static void ParseInput(
   , SoundVec *sounds
   , NumpadSupreme::AudioSystem *audioSystem)
 {
+  // Trim leading and trailing spaces from filepath;
+  // For each leading index. If the index is *still* a space or whitespace, trim.
+  while (filepath[0] == ' ')
+    filepath = filepath.substr(1);
+  
+  // Trailing trimming mimics leading
+  while (filepath[filepath.size() - 1] == ' ')
+    filepath = filepath.substr(0, filepath.size() - 1);
+
   // Create file and associate it with a key, add to vector of possibilities
+  // only if we managed to load it.
   NumpadSupreme::AudioFile *newAF = new NumpadSupreme::AudioFile(filepath);
-  audioSystem->PreloadFile(*newAF);
-  std::pair<char, NumpadSupreme::AudioFile *> keyPair(strKey[0], newAF);
-  sounds->push_back(keyPair);
+  bool loaded = audioSystem->PreloadFile(*newAF);
+  if (loaded)
+  {
+    std::pair<char, NumpadSupreme::AudioFile *> keyPair(strKey[0], newAF);
+    sounds->push_back(keyPair);
+  }
 }
 
 
@@ -64,18 +77,77 @@ static void PromptInput(SoundVec *sounds, NumpadSupreme::AudioSystem *audioSyste
 }
 
 
-// entry point
-int main(int arc, char** argv)
+// Parse file takes in the config file filepath, sound vector to populate with
+// pairs, and the audiosystem to initialize the sounds with.
+// Returns bool that tells us if we prompt for input afterwards.
+static bool ParseFile(
+  char* filepath
+  , SoundVec *sounds
+  , NumpadSupreme::AudioSystem *audioSystem)
+{
+  // Open config file specified. If invalid, alert user and prepare to parse.
+  FileUtil::File configFile (filepath);
+  if (configFile.GetLineCount() < 2)
+  {
+    std::cout << "WARNING: File at " << std::string(filepath) << " is not valid!\n";
+    return true;
+  }
+
+  // For each line, 
+  bool parseAfter = true;
+  for (unsigned int i = 0; i < configFile.GetLineCount(); ++i)
+  {
+    // If it is the first line, parse out of we are prompting after file is read.
+    std::string line = configFile[i];
+    if (i == 0)
+    {
+      parseAfter = line == "true" ? true : false;
+      continue;
+    }
+
+    // Otherwise, split at the ':' and parse the key and filepath.
+    std::string lval = line.substr(0, 1);                       // the key
+    std::string rval = line.substr(line.find_last_of(":") + 1); // audio filepath
+
+    // Create audio pair
+    ParseInput(lval, rval, sounds, audioSystem);
+  }
+
+  return parseAfter;
+}
+
+
+/* Application entry point, args as follows:
+ * ===============================
+ * Program Usage:
+ *
+ * <applicationName.exe> <optional config file filepath>
+ *
+ * If no config file is specified, you will be prompted for key bindings.
+ *
+ * ===============================
+ * Config File Format:
+ * <bool: prompt for key bindings after parse?>
+ * <char: key to press> : <audio filepath>
+ * 
+ * example:
+ * true
+ * 1 : ../Test.wav
+ */
+int main(int argc, char** argv)
 {
   // Audio system setup
   NumpadSupreme::AudioSystem audioSystem(10);
+  bool promptForInput = true;
   SoundVec sounds;
 
-  // Config file handling:
-  // ...
+  // Read config file and determine if we prompt for input.
+  if (argc >= 2)
+    promptForInput = ParseFile(argv[1], &sounds, &audioSystem);
 
-  // Handle input
-  PromptInput(&sounds, &audioSystem);
+  // Handle input if we should.
+  if(promptForInput)
+    PromptInput(&sounds, &audioSystem);
 
   // Announce we are ready to jam out
   std::cout << "== [ " << sounds.size() << " sound(s) loaded and ready! ] ==\n";
