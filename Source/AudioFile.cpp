@@ -1,3 +1,17 @@
+/*!***************************************************************************
+@file    AudioFile.cpp
+@author  Reverie Wisp
+@par     Email: contact@rw0.pw
+@date    11/19/2016
+
+@brief
+Lifted from my ASCIIPlayer project.
+
+Usable under the "Don't be a dick" license, included in repo. Please respect
+the individual requests of the authors of the externally included libraries.
+
+FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2015.
+*****************************************************************************/
 #include "AudioFile.hpp"
 
 
