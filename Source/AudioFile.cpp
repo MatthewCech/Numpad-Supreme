@@ -1,7 +1,7 @@
 #include "AudioFile.hpp"
 
 
-namespace ASCIIPlayer
+namespace NumpadSupreme
 {
   // Static init.
   APUnique AudioFile::uniqueID_ = 0; // ID for lookup in the audio system

@@ -2,7 +2,7 @@
 #include <FMOD\fmod_errors.h>
 
 
-namespace ASCIIPlayer
+namespace NumpadSupreme
 {
   // Static Variable Init
   APUnique AudioSystem::AudioSystemIDIncrement = 0;

@@ -6,7 +6,7 @@
 
 
 
-namespace ASCIIPlayer
+namespace NumpadSupreme
 {
   class AudioSystem;
 
